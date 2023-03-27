@@ -20,7 +20,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: flutter/cooker_scanner
+        working-directory: flutter/scanner_cooker
 
     steps:
       - uses: actions/checkout@v3
@@ -37,9 +37,7 @@ jobs:
           cache: true
 
       - name: Get dependencies
-        run: |
-          ls
-          flutter pub get
+        run: flutter pub get
 
       - name: Start release build
         run: flutter build appbundle
