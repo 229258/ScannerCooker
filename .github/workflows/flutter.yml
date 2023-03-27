@@ -20,7 +20,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: flutter
+        working-directory: flutter/scanner_cooker
 
     steps:
       - uses: actions/checkout@v3
