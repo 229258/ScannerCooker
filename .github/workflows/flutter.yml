@@ -30,14 +30,16 @@ jobs:
           java-version: "12.x"
           cache: 'gradle'
          
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v3
         with:
           flutter-version: "3.0.0"
           channel: 'stable'
           cache: true
 
       - name: Get dependencies
-        run: flutter pub get
+        run: |
+          ls
+          flutter pub get
 
       - name: Start release build
         run: flutter build appbundle
