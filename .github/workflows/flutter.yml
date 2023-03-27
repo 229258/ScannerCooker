@@ -45,4 +45,4 @@ jobs:
       - name: Start release build
         run: |
           flutter doctor
-          flutter run build appbundle
+          flutter build appbundle
