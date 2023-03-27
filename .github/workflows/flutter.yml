@@ -40,4 +40,6 @@ jobs:
         run: flutter pub get
 
       - name: Start release build
-        run: flutter run -d all
+        run: |
+          flutter doctor
+          flutter run -d all
