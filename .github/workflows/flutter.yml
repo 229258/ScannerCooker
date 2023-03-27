@@ -41,8 +41,9 @@ jobs:
           flutter pub get
           sudo apt install ninja-build
           sudo apt install libgtk-3-dev
+          flutter doctor --android-licenses
 
       - name: Start release build
         run: |
           flutter doctor
-          flutter run -d all
+          flutter run build appbundle
