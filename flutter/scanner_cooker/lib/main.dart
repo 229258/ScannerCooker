@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
+import 'screens/auth/signin_screen.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -72,41 +75,17 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-        appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: Text(widget.title),
-        ),
-        body: FutureBuilder(
-          future: getFirebaseData(),
-          builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return Column(
-                children: [
-                  Container(
-                    height: 27,
-                    child: Text(
-                      snapshot.data != null
-                          ? "Product:  ${snapshot.data?.data()}"
-                          : "No data found",
-                      overflow: TextOverflow.fade,
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                ],
-              );
-            } else if (snapshot.connectionState == ConnectionState.none) {
-              return Text("No data");
-            }
-            return CircularProgressIndicator();
-          },
-        ));
+    return MaterialApp(
+      title: "Scanner Cooker",
+      theme: ThemeData(
+        primarySwatch: Colors.blue
+      ),
+      home: const SignInScreen()
+    );
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getFirebaseData() async {
+  /*Future<DocumentSnapshot<Map<String, dynamic>>> getFirebaseData() async {
     // Get docs from collection reference
-    await Firebase.initializeApp();
     final data = await FirebaseFirestore.instance
         .collection("recipes")
         .doc("EzXAH3ihGLSLx1fJYBL2")
@@ -118,5 +97,5 @@ class _MyHomePageState extends State<MyHomePage> {
       print("Data not found");
     }
     return data;
-  }
+  }*/
 }
