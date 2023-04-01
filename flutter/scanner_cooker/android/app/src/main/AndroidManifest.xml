@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.scanner_cooker">
    <application
-        android:label="scanner_cooker"
+        android:label="scanner_coker"
         android:name="${applicationName}"
         android:icon="@mipmap/scanner_cooker">
         <activity
