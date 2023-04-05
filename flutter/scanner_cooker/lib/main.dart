@@ -3,10 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'screens/auth/signin_screen.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true, cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
   runApp(const MyApp());
 }
 
@@ -56,6 +59,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+
+
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -80,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
       theme: ThemeData(
         primarySwatch: Colors.blue
       ),
-      home: const SignInScreen()
+      home: const SignInScreen(),
     );
   }
 

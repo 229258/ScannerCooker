@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scanner_cooker/screens/home_screen.dart';
 
-import '../../database/recipe.dart';
 import '../../utils/custom_button.dart';
 import '../../utils/color_utils.dart';
 import '../../utils/textfield_widget.dart';
-import 'package:scanner_cooker/database/user.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -99,20 +97,13 @@ class _nameState extends State<SignUpScreen> {
 
 bool addUser(String user)
 {
-  List<Item> list = List.empty();
-
   if (user != null)
   {
-    var item = UserData(id: user, recipes: list);
-    FirebaseFirestore.instance.collection("users").doc(user).collection('/recipes').doc().set(
-      {
-      }
-    );
+    FirebaseFirestore.instance.collection("users").doc(user).collection('/recipes');
     return true;
   }
   else
   {
     return false;
   }
-
 }

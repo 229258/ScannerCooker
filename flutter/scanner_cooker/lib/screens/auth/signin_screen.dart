@@ -26,7 +26,8 @@ class _SignInScreenState extends State<SignInScreen> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(color:
-            stringToColorInHex("91e5f6")
+            /*stringToColorInHex("91e5f6")*/
+            stringToColorInHex("000000")
         ),
         child: SingleChildScrollView(
           child: Padding(

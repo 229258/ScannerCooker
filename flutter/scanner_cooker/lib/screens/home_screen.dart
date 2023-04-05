@@ -12,6 +12,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreen();
 }
 
+//czy jest połączenie z internetem - connection state, blad 404
+
 class _HomeScreen extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {

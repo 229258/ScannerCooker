@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scanner_cooker/database/recipe.dart';
 
 import '../../database/database.dart';
 
+String COLLECTION_USERS = "users";
+String RECIPES = "recipes";
 
 class ShowRecipesPage extends StatefulWidget {
   const ShowRecipesPage({Key? key}) : super(key: key);
@@ -18,79 +22,74 @@ class _ShowRecipesPageState extends State<ShowRecipesPage>
 {
   List<Item> recipeItems = [];
   String user = FirebaseAuth.instance.currentUser!.uid;
-  Database d = Database(FirebaseAuth.instance.currentUser!.uid);
+  bool connectInternet = true;
+
 
   @override
   void initState()
   {
-    fetchRecords();
-    FirebaseFirestore.instance.collection("users").doc(user).collection("/recipes").snapshots().listen((records) {
-      mapRecords(records);
-    });
-
+    Database.fetchRecords();
     super.initState();
+        FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user).collection(RECIPES).snapshots(includeMetadataChanges: true).listen((records)
+        {
+          var list = Database.mapRecords(records);
+
+          if (mounted) { // check whether the state object is in tree
+            setState(() {
+              recipeItems = list;
+              connectInternet = connect();
+            });
+          }
+          //recipeItems = [];
+        }).onError((e)=>print(e.toString()));
   }
 
-  fetchRecords() async {
-    var records = await FirebaseFirestore.instance
-        .collection("users")
-        .doc(user)
-        .collection("/recipes")
-        .get();
-
-    mapRecords(records);
-  }
-
-  mapRecords(QuerySnapshot<Map<String, dynamic>> records)
+  bool connect()
   {
-    var _list = records.docs.map((item) => Item(
-        id: item.id,
-        products: item['products'],
-        recipe: item['recipe']),
-    ).toList();
+    bool res = false;
+    var subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none)
+      {
+        res =  false;
+      }
+      else
+      {
+        res =  true;
+      }
+    }).onError((error, s) =>({
+      res = false
+    }));
 
-    setState(() {
-      recipeItems = _list;
-    });
+    return res;
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          title: Text("FAVORITES RECIPIES"),
           actions: [
             IconButton(
-                onPressed: showItemDialog,
-                icon: const Icon(Icons.add))
-          ]
+                onPressed: (){searchBar();},
+                icon: const Icon(Icons.search)
+            )
+          ],
       ),
-      body: ListView.builder(
+      floatingActionButton: FloatingActionButton(child: Icon(Icons.add), onPressed: showItemDialog,),
+      body:
+        ListView.builder(
           itemCount: recipeItems.length,
           itemBuilder: (context, index){
-            return Slidable(
-                endActionPane: ActionPane(
-                  motion: ScrollMotion(),
-                  children: [
-                    SlidableAction(
-                        onPressed: (c){
-                          d.deleteItem(recipeItems[index].id);
-                        },
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        icon: Icons.delete,
-                        label: 'Delete',
-                        spacing: 8
-                    )
-                  ],
-
-                ),
-                child: ListTile(
+            return Card(
+                  color: Colors.blue,
+                    child: ListTile(
+                  leading: IconButton(onPressed: () { editItemDialog(index); }, icon: Icon(Icons.edit),),
+                  trailing: IconButton(onPressed: () { Database.deleteItem(recipeItems[index].id); }, icon: Icon(Icons.delete),),
                   title: Text(recipeItems[index].products),
                   subtitle: Text(recipeItems[index].recipe ?? ''),
                 )
             );
-          }),
+          })
     );
   }
   showItemDialog()
@@ -115,12 +114,13 @@ class _ShowRecipesPageState extends State<ShowRecipesPage>
               TextButton(onPressed: (){
                 var products = productsController.text.trim();
                 var recipe = recipeController.text.trim();
-                var ans = d.addItem(products, recipe);
+
+                var ans = Database.addItem(products, recipe);
 
                 if (!ans)
                 {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("product not entered"),
+                    content: Text("Product not entered"),
                   ));
                 }
                 Navigator.pop(context);
@@ -132,6 +132,94 @@ class _ShowRecipesPageState extends State<ShowRecipesPage>
     }
     );
   }
+
+  editItemDialog(index)
+  {
+    var recipeController = TextEditingController();
+    var value = recipeItems[index].recipe ?? '';
+
+    recipeController.value = TextEditingValue(
+      text: value,
+      selection: TextSelection.fromPosition(
+        TextPosition(offset: value.length),
+      ),
+    );
+
+    showDialog(
+        context: context, builder: (context) {
+      return Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              const Text('Item details'),
+              Text(
+                recipeItems[index].products
+              ),
+              TextField(
+                controller: recipeController,
+                showCursor: true
+              ),
+              TextButton(onPressed: (){
+                var ans = false;
+                var recipe = recipeController.text.trim();
+                try
+                {
+                  ans = Database.editItem(recipeItems[index].id, recipe);
+                }on Exception {
+                  ans = false;
+                }
+
+                if (!ans)
+                {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Recipe don't edit"),
+                  ));
+                }
+                Navigator.pop(context);
+              }, child: const Text("Edit"))
+            ],
+          ),
+        ),
+      );
+    }
+    );
+  }
+
+  searchBar()
+  {
+    var searchController = TextEditingController();
+
+    showDialog(
+        context: context, builder: (context) {
+      return Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              const Text('What are you looking for'),
+              TextField(
+                controller: searchController,
+              ),
+              TextButton(onPressed: (){
+                var text = searchController.text.trim();
+
+                if (text != null)
+                {
+                  var ans = Database.searchItem(text);
+                }
+
+                Navigator.pop(context);
+              }, child: const Text("FIND"))
+            ],
+          ),
+        ),
+      );
+    }
+    );
+  }
+
+
 }
 
 

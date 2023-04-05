@@ -15,6 +15,12 @@ class Item {
   String products;
   String? recipe;
 
+
+  factory Item.empty()
+  {
+    return Item(id: "id", products: "", recipe: "");
+  }
+
   factory Item.fromJson(Map<String, dynamic> json) => Item(
     id: json["id"],
     products: json["name"],
