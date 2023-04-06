@@ -114,9 +114,40 @@ class Database
     return res;
   }
 
-  static void searchItem(String products)
+  static List<Item> searchItem(String search, List<Item> prod)
   {
-    print(products);
+    Map<Item, int> map = {};
+
+    String result1 = search.replaceAll(RegExp('[^A-Za-z]'), " ");
+
+    List<String> search_products = result1.split(" ").toList();
+
+    search_products.removeWhere((element) => (element.compareTo('') == 0));
+
+    var counter = 0;
+
+    print(search_products);
+
+    for (var p in prod)
+    {
+      for (var s in search_products)
+      {
+        if (p.products.toLowerCase().contains(s.trim().toLowerCase()))
+        {
+          counter++;
+        }
+      }
+
+      if (counter != 0)
+      {
+        map.putIfAbsent(p, () => counter);
+      }
+      counter = 0;
+    }
+
+    List<Item> list = (Map.fromEntries(map.entries.toList()..sort((e1, e2) => e1.value.compareTo(e2.value)))).keys.toList();
+
+    return list;
   }
 
 }

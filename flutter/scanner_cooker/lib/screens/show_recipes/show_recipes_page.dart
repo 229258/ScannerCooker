@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scanner_cooker/database/recipe.dart';
+import 'package:scanner_cooker/screens/show_recipes/show_search_recipes_page.dart';
 
 import '../../database/database.dart';
 
@@ -21,6 +22,7 @@ class ShowRecipesPage extends StatefulWidget {
 class _ShowRecipesPageState extends State<ShowRecipesPage>
 {
   List<Item> recipeItems = [];
+  List<Item> tmpRecipeItems = [];
   String user = FirebaseAuth.instance.currentUser!.uid;
   bool connectInternet = true;
 
@@ -87,6 +89,9 @@ class _ShowRecipesPageState extends State<ShowRecipesPage>
                   trailing: IconButton(onPressed: () { Database.deleteItem(recipeItems[index].id); }, icon: Icon(Icons.delete),),
                   title: Text(recipeItems[index].products),
                   subtitle: Text(recipeItems[index].recipe ?? ''),
+                      onTap: () {
+                        print("tapped");
+                      }
                 )
             );
           })
@@ -203,13 +208,15 @@ class _ShowRecipesPageState extends State<ShowRecipesPage>
               ),
               TextButton(onPressed: (){
                 var text = searchController.text.trim();
+                List<Item> ans = [];
 
                 if (text != null)
                 {
-                  var ans = Database.searchItem(text);
+                  ans = Database.searchItem(text, recipeItems);
                 }
 
                 Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ShowSearchRecipesPage(recipes: ans)));
               }, child: const Text("FIND"))
             ],
           ),
