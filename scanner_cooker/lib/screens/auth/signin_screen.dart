@@ -62,7 +62,6 @@ class _SignInScreenState extends State<SignInScreen> {
                           textColor: Colors.white,
                           fontSize: 16.0
                         );
-                        Navigator.push(context, new MaterialPageRoute(builder: (context) => const HomeScreen()));
                     });
                 }),
                 signUpOption()
