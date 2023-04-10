@@ -1,7 +1,8 @@
-import 'package:dio/dio.dart';//do laczenia sie z api
+import 'package:dio/dio.dart';
 import 'package:scanner_cooker/spoonacular/models/recipe_details.dart';
 import 'models/info.dart';
 import 'models/recipe.dart';
+import 'models/recipe_details.dart';
 
 const ingredientsRecipePath = '/findByIngredients?';
 const informationRecipePath = '/information?';
@@ -21,7 +22,7 @@ class GetRecipeByIngredients {
       url = url.substring(0, url.length - 1);
     }
 
-    final result = await dio.get(url);//wysylamy zapytanie do api
+    final result = await dio.get(url);
 
     List<int> recipesIds = [];
 
@@ -34,8 +35,7 @@ class GetRecipeByIngredients {
       throw Error();
     }
 
-    List<RecipeDetails> recipes = [];//lista do zapisow szczegolow
-
+    List<RecipeDetails> recipes = [];
 
     for (var element in recipesIds) {
       if (element != -1) {
@@ -43,7 +43,10 @@ class GetRecipeByIngredients {
 
         final infoResult = await dio.get(url);
         if (infoResult.statusCode == 200) {
-          recipes.add(RecipeDetails.fromJson(infoResult.data));
+          var recipe = RecipeDetails.fromJson(infoResult.data);
+          RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+          recipe.instructions = (recipe.instructions ?? "").replaceAll(exp, "");
+          recipes.add(recipe);
         } else {
           //TODO: implement something?
         }
