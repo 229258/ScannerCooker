@@ -31,8 +31,7 @@ class GetRecipeByIngredients {
         recipesIds.add(Recipe.fromJson(result.data[i]).id ?? -1);
       }
     } else {
-      //TODO: implement proper error
-      throw Error();
+      throw Exception("Error getting recipe by ingredients");
     }
 
     List<RecipeDetails> recipes = [];
@@ -48,7 +47,7 @@ class GetRecipeByIngredients {
           recipe.instructions = (recipe.instructions ?? "").replaceAll(exp, "");
           recipes.add(recipe);
         } else {
-          //TODO: implement something?
+          throw Exception("Error getting recipe details");
         }
       }
     }

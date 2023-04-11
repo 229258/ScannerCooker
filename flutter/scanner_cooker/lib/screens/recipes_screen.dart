@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scanner_cooker/utils/custom_button.dart';
 import 'package:scanner_cooker/utils/textfield_widget.dart';
 import '../spoonacular/get_recipe_from_ingredients.dart';
@@ -37,16 +38,21 @@ class _RecipesScreenState extends State<RecipesScreen> {
                           const SizedBox(height: 40),
                           customButton(context, "Generate", () {
                             Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.parse(recipesCountTextController.text));
-                            recipes.then((value) {
+                            recipes.catchError((e){
+                              Fluttertoast.showToast(
+                                  msg: "Error: ${e.toString()}",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0
+                              );
+                            }).then((value) {
                               setState(() {
                                 titleTextHolder = value[0].title ?? "";
                                 instructionsTextHolder = value[0].instructions ?? "";
                                 recipeBackground = const Color.fromARGB(100, 255, 255, 255);
                               });
-                              // List<Widget> items = [];
-                              // for (var recipe in value) {
-                              //   items.add(getRecipeItem(recipe));
-                              // }
                             });
                           }),
                           const SizedBox(height: 40),
