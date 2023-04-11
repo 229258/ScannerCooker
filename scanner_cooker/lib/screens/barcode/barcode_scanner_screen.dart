@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import 'package:translator/translator.dart';
 import 'package:http/http.dart' as http;
 import 'package:scanner_cooker/utils/constants.dart';
 
@@ -30,7 +32,7 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
               Row(children: [
                 Container(
                     margin: EdgeInsets.fromLTRB(
-                        20, MediaQuery.of(context).size.height * 0.05, 20, 0),
+                        20, MediaQuery.of(context).size.height * 0.05, 0, 0),
                     child: SizedBox(
                         height: MediaQuery.of(context).size.height * 0.15,
                         child: customButton(
@@ -40,7 +42,7 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
                 SizedBox(
                     height: MediaQuery.of(context).size.height * 0.65,
                     child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                         scrollDirection: Axis.vertical,
                         child: Column(children: _createIngredientsFields())))
               ]),
@@ -56,7 +58,7 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
                 ]),
                 Column(children: [
                   Container(
-                      margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      margin: const EdgeInsets.fromLTRB(20, 0, 0, 0),
                       child: SizedBox(
                           height: MediaQuery.of(context).size.height * 0.15,
                           child:
@@ -114,8 +116,18 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
         throw Exception("No results for provided barcode");
       }
 
-      return responseParsed["products"][0]["product_name"];
+      final product = responseParsed["products"][0]["product_name"];
+      return _translate(product);
     } catch (ex) {
+      return Future.error(ex.toString());
+    }
+  }
+
+  Future<String> _translate(String product) async {
+    try {
+      final translator = GoogleTranslator();
+      return (await translator.translate(product, to: 'en')).toString();
+    } catch(ex) {
       return Future.error(ex.toString());
     }
   }
@@ -137,7 +149,7 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
             width: MediaQuery.of(context).size.width * 0.95,
             height: MediaQuery.of(context).size.height * 0.12,
             child: Container(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                 margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                 color: const Color.fromRGBO(255, 255, 255, 0.4),
                 child: Row(children: <Widget>[
