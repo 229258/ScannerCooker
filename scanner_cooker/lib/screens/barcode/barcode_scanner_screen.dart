@@ -25,58 +25,62 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: stringToColorInHex(Constants.backgroundColorHex),
-        body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Row(children: [
+      backgroundColor: stringToColorInHex(Constants.backgroundColorHex),
+      body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Row(children: [
+              Container(
+                  margin: EdgeInsets.fromLTRB(
+                      20, MediaQuery.of(context).size.height * 0.05, 0, 0),
+                  child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.15,
+                      child: customButton(
+                          context, "SCAN BARCODE", _scanBarcode, 0.9)))
+            ]),
+            Row(children: [
+              SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.65,
+                  child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      scrollDirection: Axis.vertical,
+                      child: Column(children: _createIngredientsFields())))
+            ]),
+            Row(children: [
+              Column(children: [
                 Container(
-                    margin: EdgeInsets.fromLTRB(
-                        20, MediaQuery.of(context).size.height * 0.05, 0, 0),
+                    margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                     child: SizedBox(
                         height: MediaQuery.of(context).size.height * 0.15,
-                        child: customButton(
-                            context, "SCAN BARCODE", _scanBarcode, 0.9)))
+                        child: customButton(context, "CANCEL", () {
+                          Navigator.pop(context);
+                        }, 0.4)))
               ]),
-              Row(children: [
-                SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.65,
-                    child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                        scrollDirection: Axis.vertical,
-                        child: Column(children: _createIngredientsFields())))
+              Column(children: [
+                Container(
+                    margin: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+                    child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.15,
+                        child:
+                            customButton(context, "ADD TO LIST", () {}, 0.4)))
               ]),
-              Row(children: [
-                Column(children: [
-                  Container(
-                      margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      child: SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.15,
-                          child: customButton(context, "CANCEL", () {
-                            Navigator.pop(context);
-                          }, 0.4)))
-                ]),
-                Column(children: [
-                  Container(
-                      margin: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-                      child: SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.15,
-                          child:
-                              customButton(context, "ADD TO LIST", () {}, 0.4)))
-                ]),
-              ])
-            ]));
+            ])
+          ]),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _scanBarcode();
+        },
+        backgroundColor: stringToColorInHex(Constants.backgroundColorHex),
+        child: const Icon(Icons.qr_code_scanner),
+      ),
+    );
   }
 
   Future _scanBarcode() async {
     String scanResult = '';
     try {
       scanResult = await FlutterBarcodeScanner.scanBarcode(
-        '#ff6666',
-        "Cancel",
-        false,
-        ScanMode.BARCODE
-      );
+          '#ff6666', "Cancel", false, ScanMode.BARCODE);
     } on PlatformException {
       _showToast("Error: Failed to get platform version");
     }
@@ -127,7 +131,7 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
     try {
       final translator = GoogleTranslator();
       return (await translator.translate(product, to: 'en')).toString();
-    } catch(ex) {
+    } catch (ex) {
       return Future.error(ex.toString());
     }
   }
