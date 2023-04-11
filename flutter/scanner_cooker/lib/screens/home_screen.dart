@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scanner_cooker/screens/auth/signin_screen.dart';
+import 'package:scanner_cooker/screens/show_recipes/show_recipes_page.dart';
 import 'package:scanner_cooker/screens/recipes_screen.dart';
 
 import '../utils/color_utils.dart';
@@ -11,6 +12,8 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreen();
 }
+
+//czy jest połączenie z internetem - connection state, blad 404
 
 class _HomeScreen extends State<HomeScreen> {
   @override
@@ -34,7 +37,9 @@ class _HomeScreen extends State<HomeScreen> {
                   const SizedBox(
                     height: 40
                   ),
-                  customButton(context, "SHOW THE RECIPES", () {}),
+                  customButton(context, "SHOW THE RECIPES", () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ShowRecipesPage()));
+                  }),
                   const SizedBox(
                     height: 40
                   ),
