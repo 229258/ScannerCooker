@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:scanner_cooker/database/recipe.dart';
-
-import '../../database/database.dart';
+import 'package:scanner_cooker/database/recipeItem.dart';
 
 String COLLECTION_USERS = "users";
 String RECIPES = "recipes";
@@ -18,7 +16,6 @@ class ShowSearchRecipesPage extends StatefulWidget {
 
 class _ShowSearchRecipesPageState extends State<ShowSearchRecipesPage>
 {
-
   List<Item> search_recipes = [];
 
   _ShowSearchRecipesPageState(List<Item> recipes)
@@ -75,8 +72,6 @@ class _ShowSearchRecipesPageState extends State<ShowSearchRecipesPage>
     }
     );
   }
-
-
 }
 
 

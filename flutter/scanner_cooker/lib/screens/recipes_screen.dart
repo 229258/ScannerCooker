@@ -50,6 +50,10 @@ class _RecipesScreenState extends State<RecipesScreen> {
                                 recipesListViewItems = value;
                                 recipeBackground = const Color.fromARGB(100, 255, 255, 255);
                               });
+                              // List<Widget> items = [];
+                              // for (var recipe in value) {
+                              //   items.add(getRecipeItem(recipe));
+                              // }
                             });
                           }),
                           const SizedBox(height: 40),
@@ -152,5 +156,65 @@ class _RecipesScreenState extends State<RecipesScreen> {
         )
     );
   }
+
+  Future<List<RecipeDetails>>  _getMockData()
+  {
+    List<RecipeDetails> list = [];
+
+    RecipeDetails x = RecipeDetails.fromJson(
+          {
+        "id": 1,
+        "title":"Fries",
+        "instructions": "Cut into bars. Fry in hot, deep fat"
+        },
+    );
+
+    RecipeDetails y = RecipeDetails.fromJson(
+      {
+        "id": 2,
+        "title":"Tomatoes",
+        "instructions": "Cut tomatoes. Done"
+      },
+    );
+
+    list.add(x);
+    list.add(y);
+
+    return Future.value(list);
+  }
+
+  void addData(List<RecipeDetails> list, int index, String products)
+  {
+    RecipeDetails recipe = RecipeDetails.fromJson(
+        {
+          "id": -1,
+          "title": "",
+          "instructions": ""
+        }
+        );
+
+    try
+    {
+      recipe = list[index];
+      Database.addItemFromModel(recipe, products);
+    }on Exception catch (e)
+    {
+        _showMessage("Data could not be saved");
+    }
+    return;
+
+  }
+
+  static void _showMessage(String text)
+  {
+    Fluttertoast.showToast(msg: text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        textColor: Colors.white,
+        fontSize: 16.0);
+  }
+
+
 }
 
