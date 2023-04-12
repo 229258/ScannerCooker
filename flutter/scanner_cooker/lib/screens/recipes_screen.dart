@@ -91,6 +91,11 @@ class _RecipesScreenState extends State<RecipesScreen> {
     }
     return Column(children: <Widget>[
       firstEmptySpace,
+      Align(
+        alignment: Alignment.topRight,
+        child: IconButton(icon: Icon(Icons.star_border), onPressed: () { print("tap"); },)
+      ),
+
       Text(details.title ?? "",
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Color.fromARGB(255, 75, 75, 75)),
           textAlign: TextAlign.center),
