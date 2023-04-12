@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:scanner_cooker/database/database.dart';
+import 'package:scanner_cooker/spoonacular/models/recipe.dart';
 import 'package:scanner_cooker/utils/custom_button.dart';
 import 'package:scanner_cooker/utils/textfield_widget.dart';
 import '../spoonacular/get_recipe_from_ingredients.dart';
@@ -18,6 +21,9 @@ class _RecipesScreenState extends State<RecipesScreen> {
   String titleTextHolder = "";
   String instructionsTextHolder = "";
   Color recipeBackground = Colors.transparent;
+  Color iconColor = Colors.transparent;
+
+  List<RecipeDetails> list = [];
 
   @override
   Widget build(BuildContext context) {
@@ -36,13 +42,17 @@ class _RecipesScreenState extends State<RecipesScreen> {
                           inputField(Icons.add, "Ingredients list", false, ingredientsTextController),
                           const SizedBox(height: 40),
                           customButton(context, "Generate", () {
-                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.parse(recipesCountTextController.text));
+                            //Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.parse(recipesCountTextController.text));
+                            Future<List<RecipeDetails>> recipes = _getMockData();
                             recipes.then((value) {
                               setState(() {
                                 titleTextHolder = value[0].title ?? "";
                                 instructionsTextHolder = value[0].instructions ?? "";
                                 recipeBackground = const Color.fromARGB(100, 255, 255, 255);
+                                iconColor = Colors.black;
+                                list = value;
                               });
+
                               // List<Widget> items = [];
                               // for (var recipe in value) {
                               //   items.add(getRecipeItem(recipe));
@@ -70,7 +80,8 @@ class _RecipesScreenState extends State<RecipesScreen> {
                                           instructionsTextHolder,
                                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color.fromARGB(255, 75, 75, 75)),
                                           textAlign: TextAlign.center
-                                      )
+                                      ),
+                                      IconButton(onPressed: () {addData(list, 0, ingredientsTextController.text);}, icon: Icon(Icons.star), color: iconColor, tooltip: "Do you want to favorites recipes?")
                                     ],
                                   )
                               )
@@ -93,5 +104,65 @@ class _RecipesScreenState extends State<RecipesScreen> {
         ]
     );
   }
+
+  Future<List<RecipeDetails>>  _getMockData()
+  {
+    List<RecipeDetails> list = [];
+
+    RecipeDetails x = RecipeDetails.fromJson(
+          {
+        "id": 1,
+        "title":"Fries",
+        "instructions": "Cut into bars. Fry in hot, deep fat"
+        },
+    );
+
+    RecipeDetails y = RecipeDetails.fromJson(
+      {
+        "id": 2,
+        "title":"Tomatoes",
+        "instructions": "Cut tomatoes. Done"
+      },
+    );
+
+    list.add(x);
+    list.add(y);
+
+    return Future.value(list);
+  }
+
+  void addData(List<RecipeDetails> list, int index, String products)
+  {
+    RecipeDetails recipe = RecipeDetails.fromJson(
+        {
+          "id": -1,
+          "title": "",
+          "instructions": ""
+        }
+        );
+
+    try
+    {
+      recipe = list[index];
+      Database.addItemFromModel(recipe, products);
+    }on Exception catch (e)
+    {
+        _showMessage("Data could not be saved");
+    }
+    return;
+
+  }
+
+  static void _showMessage(String text)
+  {
+    Fluttertoast.showToast(msg: text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        textColor: Colors.white,
+        fontSize: 16.0);
+  }
+
+
 }
 

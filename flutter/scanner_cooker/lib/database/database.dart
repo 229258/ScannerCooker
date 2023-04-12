@@ -4,7 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:scanner_cooker/database/recipe.dart';
+import 'package:scanner_cooker/database/recipeItem.dart';
+import 'package:scanner_cooker/spoonacular/models/recipe.dart';
+
+import '../spoonacular/models/recipe_details.dart';
 
 String COLLECTION_USERS = "users";
 String RECIPES = "recipes";
@@ -47,6 +50,7 @@ class Database
   {
     var _list = records.docs.map((item) => Item(
         id: item.id,
+        title: item['title'],
         products: item['products'],
         recipe: item['recipe']),
     ).toList();
@@ -55,14 +59,42 @@ class Database
     return _list;
   }
 
-  static bool addItem(String products, String recipe)
+
+  static bool addItemFromModel(RecipeDetails recipe, String products)
   {
     String user = getUser();
     bool res = false;
 
+    print(products);
+
+    Item item = Item.createItemFromModel(recipe, products);
+
+    try {
+        FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user)
+            .collection(RECIPES)
+            .add(item.toJson());
+      } catch (e) {
+        res = false;
+      }
+
+      res =  true;
+
+    print(res.toString());
+    return res;
+  }
+
+
+  static bool addItem(String products, String title, String recipe)
+  {
+    String user = getUser();
+    bool res = false;
+    int count = -1;
+
+    getRecords().then((value) => count = value).catchError((e)=>print(e));
+
     if ((products != null) && (recipe != null))
     {
-      var item = Item(id: 'id', products: products, recipe: recipe);
+      var item = Item(id: 'id', title: title, products: products, recipe: recipe);
 
       try {
         FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user)
@@ -91,10 +123,11 @@ class Database
 
 
   static deleteItem(String id) {
-      String user = getUser();
-      FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user)
-          .collection(RECIPES).doc(id).delete()
-          .catchError((e) => _showMessage("error: ${e.toString()}"));
+    String user = getUser();
+    print(id);
+    FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user)
+        .collection(RECIPES).doc(id).delete()
+        .catchError((e) => _showMessage("error: ${e.toString()}"));
   }
 
   static bool editItem(String id, String recipe)
@@ -103,16 +136,17 @@ class Database
     try {
       String user = getUser();
       FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user).collection(RECIPES).doc(id).update(
-        {
-          "recipe": recipe
-        }
+          {
+            "recipe": recipe
+          }
       );
       res = true;
     } on IOException catch (e) {
-        rethrow;
+      rethrow;
     }
     return res;
   }
+
 
   static List<Item> searchItem(String search, List<Item> prod)
   {
@@ -149,6 +183,19 @@ class Database
 
     return list;
   }
+
+  static Future<int> getRecords() async
+  {
+    var user = getUser();
+
+    var count = -1;
+
+    count = await FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user)
+        .collection(RECIPES).snapshots().length.catchError((e) => print(e));
+
+    return count;
+  }
+
 
 }
 
