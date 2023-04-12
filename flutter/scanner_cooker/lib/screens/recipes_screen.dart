@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scanner_cooker/utils/custom_button.dart';
-import 'package:scanner_cooker/utils/textfield_widget.dart';
 import '../spoonacular/get_recipe_from_ingredients.dart';
 import '../spoonacular/models/recipe_details.dart';
 import '../utils/color_utils.dart';
@@ -16,8 +15,7 @@ class RecipesScreen extends StatefulWidget {
 class _RecipesScreenState extends State<RecipesScreen> {
   TextEditingController recipesCountTextController = TextEditingController();
   TextEditingController ingredientsTextController = TextEditingController();
-  String titleTextHolder = "";
-  String instructionsTextHolder = "";
+  List<RecipeDetails> recipesListViewItems = [];
   Color recipeBackground = Colors.transparent;
 
   @override
@@ -32,12 +30,12 @@ class _RecipesScreenState extends State<RecipesScreen> {
                     padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height * 0.2, 20, 0),
                     child: Column(
                         children: <Widget>[
-                          inputField(Icons.add, "How many recipies?", false, recipesCountTextController),
+                          getRecipesCountTextField(),
                           const SizedBox(height: 40),
-                          inputField(Icons.add, "Ingredients list", false, ingredientsTextController),
+                          getIngredientsTextField(),
                           const SizedBox(height: 40),
                           customButton(context, "Generate", () {
-                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.parse(recipesCountTextController.text));
+                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.tryParse(recipesCountTextController.text));
                             recipes.catchError((e){
                               Fluttertoast.showToast(
                                   msg: "Error: ${e.toString()}",
@@ -49,8 +47,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                               );
                             }).then((value) {
                               setState(() {
-                                titleTextHolder = value[0].title ?? "";
-                                instructionsTextHolder = value[0].instructions ?? "";
+                                recipesListViewItems = value;
                                 recipeBackground = const Color.fromARGB(100, 255, 255, 255);
                               });
                             });
@@ -66,16 +63,13 @@ class _RecipesScreenState extends State<RecipesScreen> {
                                   padding: const EdgeInsets.all(32),
                                   child: Column(
                                     children: <Widget>[
-                                      Text(
-                                          titleTextHolder,
-                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Color.fromARGB(255, 75, 75, 75)),
-                                          textAlign: TextAlign.center
-                                      ),
-                                      const SizedBox(height: 40),
-                                      Text(
-                                          instructionsTextHolder,
-                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color.fromARGB(255, 75, 75, 75)),
-                                          textAlign: TextAlign.center
+                                      ListView.builder(
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: recipesListViewItems.length,
+                                        itemBuilder: (ctx, i) {
+                                          return getRecipeItem(recipesListViewItems[i], i);
+                                        },
                                       )
                                     ],
                                   )
@@ -90,13 +84,67 @@ class _RecipesScreenState extends State<RecipesScreen> {
     );
   }
 
-  Column getRecipeItem(RecipeDetails details) {
-    return Column(
-        children: <Widget>[
-          Text(details.title ?? ""),
-          const SizedBox(height: 40),
-          Text(details.instructions ?? "")
-        ]
+  Column getRecipeItem(RecipeDetails details, int index) {
+    var firstEmptySpace = const SizedBox(height: 80);
+    if (index == 0) {
+      firstEmptySpace = const SizedBox(height: 0);
+    }
+    return Column(children: <Widget>[
+      firstEmptySpace,
+      Text(details.title ?? "",
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Color.fromARGB(255, 75, 75, 75)),
+          textAlign: TextAlign.center),
+      const SizedBox(height: 40),
+      Text(details.instructions ?? "",
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color.fromARGB(255, 75, 75, 75)),
+          textAlign: TextAlign.center)
+    ]);
+  }
+
+  TextField getRecipesCountTextField() {
+    return TextField(
+        controller: recipesCountTextController,
+        cursorColor: Colors.purple,
+        style: TextStyle(color: Colors.black.withOpacity(0.9)),
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          prefixIcon: const Icon(
+              Icons.add,
+              color: Colors.black
+          ),
+          labelText: "How many recipes? (max: 3)",
+          labelStyle: TextStyle(color: Colors.black.withOpacity(0.9)),
+          filled: true,
+          floatingLabelBehavior: FloatingLabelBehavior.never,
+          fillColor: Colors.white.withOpacity(0.4),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25.0),
+              borderSide: const BorderSide(width: 0, style: BorderStyle.none)
+          ),
+        )
+    );
+  }
+  TextField getIngredientsTextField() {
+    return TextField(
+        controller: ingredientsTextController,
+        cursorColor: Colors.purple,
+        style: TextStyle(color: Colors.black.withOpacity(0.9)),
+        keyboardType: TextInputType.emailAddress,
+        decoration: InputDecoration(
+          prefixIcon: const Icon(
+              Icons.add,
+              color: Colors.black
+          ),
+          labelText: "Ingredients list",
+          labelStyle: TextStyle(color: Colors.black.withOpacity(0.9)),
+          filled: true,
+          floatingLabelBehavior: FloatingLabelBehavior.never,
+          fillColor: Colors.white.withOpacity(0.4),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25.0),
+              borderSide: const BorderSide(width: 0, style: BorderStyle.none)
+          ),
+        )
     );
   }
 }
