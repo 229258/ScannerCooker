@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:scanner_cooker/screens/auth/signin_screen.dart';
 import 'package:scanner_cooker/screens/barcode/barcode_scanner_screen.dart';
 import 'package:scanner_cooker/utils/constants.dart';
+import 'package:scanner_cooker/screens/show_recipes/show_recipes_page.dart';
+import 'package:scanner_cooker/screens/recipes_screen.dart';
 
 import '../utils/color_utils.dart';
 import '../utils/custom_button.dart';
@@ -29,11 +31,15 @@ class _HomeScreen extends State<HomeScreen> {
               padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height * 0.2, 20, 0),
               child: Column(
                 children: <Widget>[
-                  customButton(context, "CREATE PRODUCTS LIST", () {}),
+                  customButton(context, "CREATE PRODUCTS LIST", () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const RecipesScreen()));
+                  }),
                   const SizedBox(
                     height: 40
                   ),
-                  customButton(context, "SHOW THE RECIPES", () {}),
+                  customButton(context, "SHOW THE RECIPES", () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ShowRecipesPage()));
+                  }),
                   const SizedBox(
                     height: 40
                   ),
