@@ -13,6 +13,8 @@ import '../../utils/color_utils.dart';
 import '../../utils/custom_button.dart';
 
 List<String> ingredients = [];
+List<TextEditingController> _ingredientsEditControllers = [];
+bool _editIngredients = true;
 
 class BarcodeScannerScreen extends StatefulWidget {
   const BarcodeScannerScreen({super.key});
@@ -35,8 +37,17 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
                       20, MediaQuery.of(context).size.height * 0.05, 0, 0),
                   child: SizedBox(
                       height: MediaQuery.of(context).size.height * 0.15,
-                      child: customButton(
-                          context, "SCAN BARCODE", _scanBarcode, 0.9)))
+                      child: customButton(context, "ADD",
+                          () => Navigator.pop(context, ingredients), 0.4))),
+              Container(
+                  margin: EdgeInsets.fromLTRB(
+                      30, MediaQuery.of(context).size.height * 0.05, 0, 0),
+                  child: Visibility(
+                      visible: ingredients.isNotEmpty,
+                      child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.15,
+                          child: customButton(
+                              context, "EDIT", _setEditIngredients, 0.4))))
             ]),
             Row(children: [
               SizedBox(
@@ -55,23 +66,15 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
                         child: customButton(context, "CANCEL", () {
                           Navigator.pop(context);
                         }, 0.4)))
-              ]),
-              Column(children: [
-                Container(
-                    margin: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-                    child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.15,
-                        child:
-                            customButton(context, "ADD TO LIST", () {}, 0.4)))
-              ]),
+              ])
             ])
           ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _scanBarcode();
         },
-        backgroundColor: stringToColorInHex(Constants.backgroundColorHex),
-        child: const Icon(Icons.qr_code_scanner),
+        backgroundColor: Colors.white,
+        child: const Icon(Icons.qr_code_scanner, color: Colors.black),
       ),
     );
   }
@@ -159,8 +162,15 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
                 child: Row(children: <Widget>[
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.77,
-                    child: Text(ingredients[index],
-                        style: const TextStyle(fontSize: 20)),
+                    child: EditableText(
+                      style: const TextStyle(fontSize: 20),
+                      cursorColor: Colors.black,
+                      backgroundCursorColor: Colors.black,
+                      focusNode: FocusNode(),
+                      readOnly: _editIngredients,
+                      maxLines: 2,
+                      controller: _createEditController(index),
+                    ),
                   ),
                   SizedBox(
                       width: MediaQuery.of(context).size.width * 0.13,
@@ -172,9 +182,22 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
                 ])))));
   }
 
+  TextEditingController _createEditController(int index) {
+    _ingredientsEditControllers.add(TextEditingController(text: ingredients[index]));
+    return _ingredientsEditControllers[index];
+  }
+
   void _removeIngredient(String ingredient) {
+    int index = ingredients.indexOf(ingredient);
     setState(() {
       ingredients.remove(ingredient);
+      _ingredientsEditControllers.removeAt(index);
+    });
+  }
+
+  void _setEditIngredients() {
+    setState(() {
+      _editIngredients = _editIngredients ? false : true;
     });
   }
 }
