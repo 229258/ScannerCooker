@@ -47,13 +47,13 @@ class Item {
   {
     print("products createItemFromModel: ${products}");
 
-    String tmp = recipe.id.toString();
+    //String tmp = recipe.id.toString();
 
-    if (recipe.id == null)
-    {
-      var count = -1;
-      tmp = count.toString();
-    }
+
+    var count = Database.getRecords();
+    String tmp = count.toString();
+    print(tmp);
+
 
     Item item = new Item(id: tmp, products: products, title: recipe.title, recipe: recipe.instructions);
 

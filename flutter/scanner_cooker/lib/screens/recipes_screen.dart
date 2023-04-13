@@ -4,6 +4,7 @@ import 'package:scanner_cooker/utils/custom_button.dart';
 import '../spoonacular/get_recipe_from_ingredients.dart';
 import '../spoonacular/models/recipe_details.dart';
 import '../utils/color_utils.dart';
+import 'package:scanner_cooker/database/database.dart';
 
 class RecipesScreen extends StatefulWidget {
   const RecipesScreen({super.key});
@@ -17,6 +18,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
   TextEditingController ingredientsTextController = TextEditingController();
   List<RecipeDetails> recipesListViewItems = [];
   Color recipeBackground = Colors.transparent;
+  String products = "";
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,8 @@ class _RecipesScreenState extends State<RecipesScreen> {
                           getIngredientsTextField(),
                           const SizedBox(height: 40),
                           customButton(context, "Generate", () {
-                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.tryParse(recipesCountTextController.text));
+                            //Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.tryParse(recipesCountTextController.text));
+                            Future<List<RecipeDetails>> recipes = _getMockData();
                             recipes.catchError((e){
                               Fluttertoast.showToast(
                                   msg: "Error: ${e.toString()}",
@@ -49,6 +52,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                               setState(() {
                                 recipesListViewItems = value;
                                 recipeBackground = const Color.fromARGB(100, 255, 255, 255);
+                                products = ingredientsTextController.text;
                               });
                               // List<Widget> items = [];
                               // for (var recipe in value) {
@@ -97,7 +101,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
       firstEmptySpace,
       Align(
         alignment: Alignment.topRight,
-        child: IconButton(icon: Icon(Icons.star_border), onPressed: () { print("tap"); },)
+        child: IconButton(icon: Icon(Icons.star_border), onPressed: () { addData(details); },)
       ),
 
       Text(details.title ?? "",
@@ -183,20 +187,12 @@ class _RecipesScreenState extends State<RecipesScreen> {
     return Future.value(list);
   }
 
-  void addData(List<RecipeDetails> list, int index, String products)
+  void addData(RecipeDetails recipe)
   {
-    RecipeDetails recipe = RecipeDetails.fromJson(
-        {
-          "id": -1,
-          "title": "",
-          "instructions": ""
-        }
-        );
-
     try
     {
-      recipe = list[index];
       Database.addItemFromModel(recipe, products);
+      _showMessage("Recipe added");
     }on Exception catch (e)
     {
         _showMessage("Data could not be saved");

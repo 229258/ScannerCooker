@@ -188,10 +188,14 @@ class Database
   {
     var user = getUser();
 
-    var count = -1;
+    int count = -1;
 
-    count = await FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user)
-        .collection(RECIPES).snapshots().length.catchError((e) => print(e));
+    var list = await FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user)
+        .collection(RECIPES).snapshots().toList();
+
+    count = list.length;
+
+    print("getRecords ${list.length}");
 
     return count;
   }
