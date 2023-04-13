@@ -4,6 +4,7 @@ import 'package:scanner_cooker/utils/custom_button.dart';
 import '../spoonacular/get_recipe_from_ingredients.dart';
 import '../spoonacular/models/recipe_details.dart';
 import '../utils/color_utils.dart';
+import 'package:scanner_cooker/database/database.dart';
 
 class RecipesScreen extends StatefulWidget {
   const RecipesScreen({super.key});
@@ -17,6 +18,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
   TextEditingController ingredientsTextController = TextEditingController();
   List<RecipeDetails> recipesListViewItems = [];
   Color recipeBackground = Colors.transparent;
+  String products = "";
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,8 @@ class _RecipesScreenState extends State<RecipesScreen> {
                           getIngredientsTextField(),
                           const SizedBox(height: 40),
                           customButton(context, "Generate", () {
-                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.tryParse(recipesCountTextController.text));
+                            //Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.tryParse(recipesCountTextController.text));
+                            Future<List<RecipeDetails>> recipes = _getMockData();
                             recipes.catchError((e){
                               Fluttertoast.showToast(
                                   msg: "Error: ${e.toString()}",
@@ -49,7 +52,12 @@ class _RecipesScreenState extends State<RecipesScreen> {
                               setState(() {
                                 recipesListViewItems = value;
                                 recipeBackground = const Color.fromARGB(100, 255, 255, 255);
+                                products = ingredientsTextController.text;
                               });
+                              // List<Widget> items = [];
+                              // for (var recipe in value) {
+                              //   items.add(getRecipeItem(recipe));
+                              // }
                             });
                           }),
                           const SizedBox(height: 40),
@@ -91,6 +99,11 @@ class _RecipesScreenState extends State<RecipesScreen> {
     }
     return Column(children: <Widget>[
       firstEmptySpace,
+      Align(
+        alignment: Alignment.topRight,
+        child: IconButton(icon: Icon(Icons.star_border), onPressed: () { addData(details); },)
+      ),
+
       Text(details.title ?? "",
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Color.fromARGB(255, 75, 75, 75)),
           textAlign: TextAlign.center),
@@ -147,5 +160,57 @@ class _RecipesScreenState extends State<RecipesScreen> {
         )
     );
   }
+
+  Future<List<RecipeDetails>>  _getMockData()
+  {
+    List<RecipeDetails> list = [];
+
+    RecipeDetails x = RecipeDetails.fromJson(
+          {
+        "id": 1,
+        "title":"Fries",
+        "instructions": "Cut into bars. Fry in hot, deep fat"
+        },
+    );
+
+    RecipeDetails y = RecipeDetails.fromJson(
+      {
+        "id": 2,
+        "title":"Tomatoes",
+        "instructions": "Cut tomatoes. Done"
+      },
+    );
+
+    list.add(x);
+    list.add(y);
+
+    return Future.value(list);
+  }
+
+  void addData(RecipeDetails recipe)
+  {
+    try
+    {
+      Database.addItemFromModel(recipe, products);
+      _showMessage("Recipe added");
+    }on Exception catch (e)
+    {
+        _showMessage("Data could not be saved");
+    }
+    return;
+
+  }
+
+  static void _showMessage(String text)
+  {
+    Fluttertoast.showToast(msg: text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        textColor: Colors.white,
+        fontSize: 16.0);
+  }
+
+
 }
 

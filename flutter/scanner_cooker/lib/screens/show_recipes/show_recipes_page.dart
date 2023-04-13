@@ -2,9 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:scanner_cooker/database/recipe.dart';
+import 'package:scanner_cooker/database/recipeItem.dart';
 import 'package:scanner_cooker/screens/show_recipes/show_search_recipes_page.dart';
 
 import '../../database/database.dart';
@@ -88,7 +87,7 @@ class _ShowRecipesPageState extends State<ShowRecipesPage>
                   leading: IconButton(onPressed: () { editItemDialog(index); }, icon: Icon(Icons.edit),),
                   trailing: IconButton(onPressed: () { Database.deleteItem(recipeItems[index].id); }, icon: Icon(Icons.delete),),
                   title: Text(recipeItems[index].products),
-                  subtitle: Text(recipeItems[index].recipe ?? ''),
+                  subtitle: Text(recipeItems[index].title ?? ''),
                       onTap: () {
                         print("tapped");
                       }
@@ -120,7 +119,7 @@ class _ShowRecipesPageState extends State<ShowRecipesPage>
                 var products = productsController.text.trim();
                 var recipe = recipeController.text.trim();
 
-                var ans = Database.addItem(products, recipe);
+                var ans = Database.addItem(products, "", recipe);
 
                 if (!ans)
                 {
