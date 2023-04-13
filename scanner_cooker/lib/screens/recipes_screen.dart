@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scanner_cooker/utils/custom_button.dart';
+import 'barcode/barcode_scanner_screen.dart';
 import 'spoonacular/get_recipe_from_ingredients.dart';
 import 'spoonacular/models/recipe_details.dart';
 import '../utils/color_utils.dart';
@@ -27,9 +28,16 @@ class _RecipesScreenState extends State<RecipesScreen> {
             decoration: BoxDecoration(color: stringToColorInHex("91e5f6")),
             child: SingleChildScrollView(
                 child:Padding(
-                    padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height * 0.2, 20, 0),
+                    padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height * 0.1, 20, 0),
                     child: Column(
                         children: <Widget>[
+                          SizedBox(
+                            child: customButton(
+                                context,
+                                'SCAN BARCODES',
+                                () => _addIngredientsFromBarcodes(context),
+                                0.6
+                          )),
                           getRecipesCountTextField(),
                           const SizedBox(height: 40),
                           getIngredientsTextField(),
@@ -82,6 +90,14 @@ class _RecipesScreenState extends State<RecipesScreen> {
             )
         )
     );
+  }
+
+  Future<void> _addIngredientsFromBarcodes(BuildContext context) async {
+    List<String> barcodeIngredients = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const BarcodeScannerScreen()));
+
+    ingredientsTextController.text = "${ingredientsTextController.text} ${barcodeIngredients.join(" ")}";
   }
 
   Column getRecipeItem(RecipeDetails details, int index) {

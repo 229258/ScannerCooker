@@ -45,10 +45,7 @@ class _HomeScreen extends State<HomeScreen> {
                   ),
                   customButton(context, "LOG OUT", () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInScreen()));
-                  }),
-                  customButton(context, "SCAN BARCODE", () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const BarcodeScannerScreen()));
-                  }),
+                  })
               ])
             )
           )
