@@ -31,10 +31,16 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height * 0.2, 20, 0),
+            padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height * 0.1, 20, 0),
             child: Column(
               children: <Widget>[
-                placeImgIntoWidget("assets/images/FlutterIcon.png"),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.65,
+                  height: MediaQuery.of(context).size.width * 0.65,
+                  child: Image.asset(
+                    "assets/images/scanner_cooker_200.png",
+                    fit: BoxFit.fill,
+                  )),
                 const SizedBox(
                   height: 40
                 ),
@@ -49,7 +55,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 customButton(context, "LOG IN", () {
                     String errorMessage;
                     FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: emailTextController.text, 
+                      email: emailTextController.text,
                       password: passwordTextController.text)
                       .then((value) {
                         Navigator.push(context, new MaterialPageRoute(builder: (context) => const HomeScreen()));
@@ -81,7 +87,7 @@ class _SignInScreenState extends State<SignInScreen> {
         style: TextStyle(color: Colors.white70)),
         GestureDetector(
           onTap: () {
-            Navigator.push(context, 
+            Navigator.push(context,
                           MaterialPageRoute(builder: (context) => const SignUpScreen()));
           },
           child: const Text(
