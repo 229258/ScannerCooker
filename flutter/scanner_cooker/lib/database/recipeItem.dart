@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:scanner_cooker/database/database.dart';
 import 'package:scanner_cooker/spoonacular/models/recipe_details.dart';
 
@@ -26,7 +27,8 @@ class Item {
 
   factory Item.empty()
   {
-    return Item(id: "-1", products: "", title: "", recipe: "");
+    var count = Database.getRecords().toString();
+    return Item(id: count, products: "", title: "", recipe: "");
   }
 
   factory Item.fromJson(Map<String, dynamic> json) => Item(
@@ -45,19 +47,26 @@ class Item {
 
   static Item createItemFromModel(RecipeDetails recipe, String products)
   {
-    print("products createItemFromModel: ${products}");
+    if (kDebugMode) {
+      print("products createItemFromModel: $products");
+    }
 
-    //String tmp = recipe.id.toString();
+    String count = "";
 
+    if (recipe.id == null)
+    {
+      count = Database.getRecords().toString();
+    }
+    else
+    {
+      count = recipe.id.toString();
+    }
 
-    var count = Database.getRecords();
-    String tmp = count.toString();
-    print(tmp);
+    Item item = Item(id: count, products: products, title: recipe.title, recipe: recipe.instructions);
 
-
-    Item item = new Item(id: tmp, products: products, title: recipe.title, recipe: recipe.instructions);
-
-    print(item.products);
+    if (kDebugMode) {
+      print(item.products);
+    }
     return item;
   }
 

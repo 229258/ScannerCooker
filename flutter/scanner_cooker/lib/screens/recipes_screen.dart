@@ -37,8 +37,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                           getIngredientsTextField(),
                           const SizedBox(height: 40),
                           customButton(context, "Generate", () {
-                            //Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.tryParse(recipesCountTextController.text));
-                            Future<List<RecipeDetails>> recipes = _getMockData();
+                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.tryParse(recipesCountTextController.text));
                             recipes.catchError((e){
                               Fluttertoast.showToast(
                                   msg: "Error: ${e.toString()}",
@@ -159,32 +158,6 @@ class _RecipesScreenState extends State<RecipesScreen> {
           ),
         )
     );
-  }
-
-  Future<List<RecipeDetails>>  _getMockData()
-  {
-    List<RecipeDetails> list = [];
-
-    RecipeDetails x = RecipeDetails.fromJson(
-          {
-        "id": 1,
-        "title":"Fries",
-        "instructions": "Cut into bars. Fry in hot, deep fat"
-        },
-    );
-
-    RecipeDetails y = RecipeDetails.fromJson(
-      {
-        "id": 2,
-        "title":"Tomatoes",
-        "instructions": "Cut tomatoes. Done"
-      },
-    );
-
-    list.add(x);
-    list.add(y);
-
-    return Future.value(list);
   }
 
   void addData(RecipeDetails recipe)
