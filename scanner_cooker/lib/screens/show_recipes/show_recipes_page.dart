@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../database/recipe.dart';
+import '../../database/recipe.dart';
 import 'package:scanner_cooker/screens/show_recipes/show_search_recipes_page.dart';
 
-import '../database/database.dart';
+import '../../database/database.dart';
 
 String COLLECTION_USERS = "users";
 String RECIPES = "recipes";

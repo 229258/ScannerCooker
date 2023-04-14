@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scanner_cooker/utils/custom_button.dart';
 import 'barcode/barcode_scanner_screen.dart';
-import 'spoonacular/get_recipe_from_ingredients.dart';
-import 'spoonacular/models/recipe_details.dart';
+import '../spoonacular/get_recipe_from_ingredients.dart';
+import '../spoonacular/models/recipe_details.dart';
 import '../utils/color_utils.dart';
 
 class RecipesScreen extends StatefulWidget {
