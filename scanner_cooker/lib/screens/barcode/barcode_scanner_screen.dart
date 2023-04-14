@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -60,20 +61,12 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
             // ]),
             Expanded(
               flex: 1,
-              
-              child: 
-
-                  
-                Container(child:
-                
-                
-                  Container(
-                    
+              child:                   
+                Container(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  // alignment: Alignment.center,
                   child: _createIngredientsFields2()
-                 
-                 )
-                 
-            )
+                )
             ),
 
             Row(children: [
@@ -207,23 +200,22 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
       itemCount: ingredients.length,
       itemBuilder: (context, index) {
       // shrinkWrap: true,
-      return Card(child: 
-        ListTile(
+      return Card(
+        color: stringToColorInHex(Constants.backgroundColorHex), 
+        child: ListTile(
           title: TextFormField(
             controller: _createEditController(index),
             onChanged: (newValue) {ingredients[index] = _ingredientsEditControllers[index].text;},
             keyboardType: TextInputType.multiline,
             minLines: 1,
             maxLines: 3,
-            // initialValue: ingredients[index],
             readOnly: _editIngredients,
             decoration: InputDecoration(
-border: InputBorder.none,
-
-          focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: _editIngredients ? Colors.white: Colors.black,
-              ),
+              border: InputBorder.none,
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: _editIngredients ? Colors.transparent: Colors.black,
+                ),
 
             )
           ),
@@ -233,7 +225,8 @@ border: InputBorder.none,
             onPressed: () => _removeIngredient(ingredients[index]),
             icon: const Icon(Icons.delete)
             ),
-            
+
+          tileColor: Colors.white.withOpacity(0.4),
         ),
         
       );
