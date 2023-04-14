@@ -5,6 +5,7 @@ import 'barcode/barcode_scanner_screen.dart';
 import '../spoonacular/get_recipe_from_ingredients.dart';
 import '../spoonacular/models/recipe_details.dart';
 import '../utils/color_utils.dart';
+import 'package:scanner_cooker/database/database.dart';
 
 class RecipesScreen extends StatefulWidget {
   const RecipesScreen({super.key});
@@ -18,6 +19,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
   TextEditingController ingredientsTextController = TextEditingController();
   List<RecipeDetails> recipesListViewItems = [];
   Color recipeBackground = Colors.transparent;
+  String products = "";
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +59,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                               setState(() {
                                 recipesListViewItems = value;
                                 recipeBackground = const Color.fromARGB(100, 255, 255, 255);
+                                products = ingredientsTextController.text;
                               });
                             });
                           }),
@@ -108,6 +111,11 @@ class _RecipesScreenState extends State<RecipesScreen> {
     }
     return Column(children: <Widget>[
       firstEmptySpace,
+      Align(
+        alignment: Alignment.topRight,
+        child: IconButton(icon: Icon(Icons.star_border), onPressed: () { addData(details); },)
+      ),
+
       Text(details.title ?? "",
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Color.fromARGB(255, 75, 75, 75)),
           textAlign: TextAlign.center),
@@ -164,5 +172,31 @@ class _RecipesScreenState extends State<RecipesScreen> {
         )
     );
   }
+
+  void addData(RecipeDetails recipe)
+  {
+    try
+    {
+      Database.addItemFromModel(recipe, products);
+      _showMessage("Recipe added");
+    }on Exception catch (e)
+    {
+        _showMessage("Data could not be saved");
+    }
+    return;
+
+  }
+
+  static void _showMessage(String text)
+  {
+    Fluttertoast.showToast(msg: text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        textColor: Colors.white,
+        fontSize: 16.0);
+  }
+
+
 }
 

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:scanner_cooker/screens/auth/signin_screen.dart';
-import 'package:scanner_cooker/screens/barcode/barcode_scanner_screen.dart';
+import 'package:scanner_cooker/screens/show_recipes/show_recipes_screen.dart';
 import 'package:scanner_cooker/utils/constants.dart';
-import 'package:scanner_cooker/screens/show_recipes/show_recipes_page.dart';
 import 'package:scanner_cooker/screens/recipes_screen.dart';
-
 import '../utils/color_utils.dart';
 import '../utils/custom_button.dart';
 
@@ -37,8 +35,8 @@ class _HomeScreen extends State<HomeScreen> {
                   const SizedBox(
                     height: 40
                   ),
-                  customButton(context, "SHOW THE RECIPES", () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ShowRecipesPage()));
+                  customButton(context, "FAVORITE RECIPES", () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ShowRecipesScreen()));
                   }),
                   const SizedBox(
                     height: 40
