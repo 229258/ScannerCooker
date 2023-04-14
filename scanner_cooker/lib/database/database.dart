@@ -1,11 +1,12 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../database/recipe.dart';
-import 'package:scanner_cooker/screens/database/recipe.dart';
+import 'package:scanner_cooker/database/recipeItem.dart';
+
+import '../screens/show_recipes/toast_Information.dart';
+import '../spoonacular/models/recipe_details.dart';
 
 String COLLECTION_USERS = "users";
 String RECIPES = "recipes";
@@ -40,7 +41,7 @@ class Database
         .then((records)
     {
       records.docs.isNotEmpty ? mapRecords(records) : null;
-    }).catchError((e)=>debugPrint(e.toString()));
+    }).catchError((e)=>showMessage("Problem with load actual data ${e.toString()}"));
 
   }
 
@@ -48,6 +49,7 @@ class Database
   {
     var _list = records.docs.map((item) => Item(
         id: item.id,
+        title: item['title'],
         products: item['products'],
         recipe: item['recipe']),
     ).toList();
@@ -56,14 +58,49 @@ class Database
     return _list;
   }
 
-  static bool addItem(String products, String recipe)
+
+  static bool addItemFromModel(RecipeDetails recipe, String products)
   {
     String user = getUser();
     bool res = false;
 
+    print(products);
+
+    Item item = Item.createItemFromModel(recipe, products);
+
+    try {
+      FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user)
+          .collection(RECIPES)
+          .add(item.toJson());
+    } catch (e) {
+      res = false;
+    }
+
+    res =  true;
+
+    print(res.toString());
+    return res;
+  }
+
+
+  static bool addItem(String products, String title, String recipe)
+  {
+    String user = getUser();
+    bool res = false;
+    int count = -1;
+
+    getRecords()
+    .then((value) {
+      if (kDebugMode) {
+        print(value);
+      }
+      count = value;
+    }).
+    catchError((e)=>showMessage(e));
+
     if ((products != null) && (recipe != null))
     {
-      var item = Item(id: 'id', products: products, recipe: recipe);
+      var item = Item(id: count.toString(), title: title, products: products, recipe: recipe);
 
       try {
         FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user)
@@ -80,38 +117,35 @@ class Database
     return res;
   }
 
-  static void _showMessage(String text)
-  {
-    Fluttertoast.showToast(msg: text,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        textColor: Colors.white,
-        fontSize: 16.0);
-  }
-
-
   static deleteItem(String id) {
     String user = getUser();
+    print(id);
     FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user)
         .collection(RECIPES).doc(id).delete()
-        .catchError((e) => _showMessage("error: ${e.toString()}"));
+        .catchError((e) => showMessage("Can't delete item: ${e.toString()}"));
   }
 
-  static bool editItem(String id, String recipe)
+  static bool editItem(String? id, String title, String products, String recipe)
   {
     var res = false;
-    try {
+
+    if (id == null)
+    {
+      return addItem(products, title, recipe);
+    }
+    else
+    {
       String user = getUser();
       FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user).collection(RECIPES).doc(id).update(
           {
+            "products": products,
+            "title": title,
             "recipe": recipe
           }
-      );
+      ).catchError((e)=>showMessage("Can't edit item ${e.toString()}"));
       res = true;
-    } on IOException catch (e) {
-      rethrow;
     }
+
     return res;
   }
 
@@ -128,6 +162,12 @@ class Database
     var counter = 0;
 
     print(search_products);
+    List<Item> list = [];
+
+    if (prod.isEmpty)
+    {
+      return list;
+    }
 
     for (var p in prod)
     {
@@ -146,9 +186,25 @@ class Database
       counter = 0;
     }
 
-    List<Item> list = (Map.fromEntries(map.entries.toList()..sort((e1, e2) => e1.value.compareTo(e2.value)))).keys.toList();
+    list = (Map.fromEntries(map.entries.toList()..sort((e1, e2) => e1.value.compareTo(e2.value)))).keys.toList();
 
     return list;
+  }
+
+  static Future<int> getRecords() async
+  {
+    var user = getUser();
+
+    int count = -1;
+
+    var list = await FirebaseFirestore.instance.collection(COLLECTION_USERS).doc(user)
+        .collection(RECIPES).snapshots().toList().catchError((e)=>showMessage("We can't load number of items"));
+
+    count = list.length;
+
+    print("getRecords ${list.length}");
+
+    return count;
   }
 
 }
