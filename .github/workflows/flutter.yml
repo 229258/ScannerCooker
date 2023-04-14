@@ -4,13 +4,13 @@ on:
   push:
     branches: [ "main", "Development" ]
     paths:
-      - 'flutter/**'
+      - 'scanner_cooker/**'
       - '.github/workflows/flutter.yml'
 
   pull_request:
     branches: [ "main", "Development" ]
     paths:
-      - 'flutter/**'
+      - 'scanner_cooker/**'
       - '.github/workflows/flutter.yml'
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: flutter/scanner_cooker
+        working-directory: scanner_cooker
 
     steps:
       - uses: actions/checkout@v3
