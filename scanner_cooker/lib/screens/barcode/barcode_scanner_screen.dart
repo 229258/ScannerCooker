@@ -30,27 +30,23 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: stringToColorInHex(Constants.backgroundColorHex),
+      appBar: AppBar(
+        title: _editIngredients ? const Text("Scan product") : const Text("Scan product (edit mode)"),
+        backgroundColor: stringToColorInHex(Constants.backgroundColorHex).withOpacity(.25),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 20),
+            child: GestureDetector(
+              onTap: () {_setEditIngredients();},
+              child: _editIngredients ? Icon(Icons.edit) : Icon(Icons.check_sharp),
+            ),
+          )
+        ],
+      ),
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Row(children: [
-              Container(
-                  margin: EdgeInsets.fromLTRB(
-                      20, MediaQuery.of(context).size.height * 0.05, 0, 0),
-                  child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.15,
-                      child: customButton(context, "ADD",
-                          () => Navigator.pop(context, ingredients), 0.4))),
-              Container(
-                  margin: EdgeInsets.fromLTRB(
-                      30, MediaQuery.of(context).size.height * 0.05, 0, 0),
-                  child: Visibility(
-                      visible: ingredients.isNotEmpty,
-                      child: SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.15,
-                          child: customButton(
-                              context, _editIngredients ? "EDIT": "SAVE", _setEditIngredients, 0.4))))
-            ]),
+            
             // Row(children: [
             //   SizedBox(
             //       height: MediaQuery.of(context).size.height * 0.65,
@@ -63,7 +59,7 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
               flex: 1,
               child:                   
                 Container(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                   // alignment: Alignment.center,
                   child: _createIngredientsFields2()
                 )
@@ -72,12 +68,18 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
             Row(children: [
               Column(children: [
                 Container(
-                    margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    child: Visibility(
+                      visible: ingredients.isNotEmpty,
+                    
                     child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.15,
-                        child: customButton(context, "CANCEL", () {
-                          Navigator.pop(context);
-                        }, 0.4)))
+                        //height: MediaQuery.of(context).size.height * 0.15,
+                        child: customButton(context, ingredients.length != 1 ? "Add products" : "Add product",
+                          () => Navigator.pop(context, ingredients), 0.4))),
+                        // child: customButton(context, "CANCEL", () {
+                        //   Navigator.pop(context);
+                        // }, 0.4)))
+                )
               ])
             ])
           ]),
@@ -199,13 +201,14 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
     return ListView.builder(
       itemCount: ingredients.length,
       itemBuilder: (context, index) {
-      // shrinkWrap: true,
       return Card(
         color: stringToColorInHex(Constants.backgroundColorHex), 
         child: ListTile(
           title: TextFormField(
             controller: _createEditController(index),
-            onChanged: (newValue) {ingredients[index] = _ingredientsEditControllers[index].text;},
+            onChanged: (newValue) {
+              ingredients[index] = _ingredientsEditControllers[index].text;
+            },
             keyboardType: TextInputType.multiline,
             minLines: 1,
             maxLines: 3,
@@ -235,7 +238,10 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
   }
 
   TextEditingController _createEditController(int index) {
-    _ingredientsEditControllers[index].text = TextEditingController(text: ingredients[index]).text;
+    if (_ingredientsEditControllers.length == index) {
+      _ingredientsEditControllers.add(TextEditingController(text: ingredients[index]));
+      ingredients[index] = (TextEditingController(text: ingredients[index])).text;
+    }
     return _ingredientsEditControllers[index];
   }
 
