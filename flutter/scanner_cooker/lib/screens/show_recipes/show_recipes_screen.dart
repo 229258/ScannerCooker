@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:scanner_cooker/database/recipeItem.dart';
@@ -25,7 +24,6 @@ class _ShowRecipesScreenState extends State<ShowRecipesScreen>
   List<Item> recipeItems = [];
   List<Item> tmpRecipeItems = [];
   String user = FirebaseAuth.instance.currentUser!.uid;
-  bool connectInternet = true;
 
 
   @override
@@ -40,30 +38,10 @@ class _ShowRecipesScreenState extends State<ShowRecipesScreen>
           if (mounted) { // check whether the state object is in tree
             setState(() {
               recipeItems = list;
-              connectInternet = connect();
             });
           }
           //recipeItems = [];
         }).onError((e)=>showMessage(e.toString()));
-  }
-
-  bool connect()
-  {
-    bool res = false;
-    var subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      if (result == ConnectivityResult.none)
-      {
-        res =  false;
-      }
-      else
-      {
-        res =  true;
-      }
-    }).onError((error, s) =>({
-      res = false
-    }));
-
-    return res;
   }
 
   @override
