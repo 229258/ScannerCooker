@@ -14,6 +14,7 @@ import '../../utils/custom_button.dart';
 
 List<String> ingredients = [];
 List<TextEditingController> _ingredientsEditControllers = [];
+List<String> ingredientsCodes = [];
 bool _editIngredients = true;
 
 class BarcodeScannerScreen extends StatefulWidget {
@@ -47,16 +48,34 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
                       child: SizedBox(
                           height: MediaQuery.of(context).size.height * 0.15,
                           child: customButton(
-                              context, "EDIT", _setEditIngredients, 0.4))))
+                              context, _editIngredients ? "EDIT": "SAVE", _setEditIngredients, 0.4))))
             ]),
-            Row(children: [
-              SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.65,
-                  child: SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      scrollDirection: Axis.vertical,
-                      child: Column(children: _createIngredientsFields())))
-            ]),
+            // Row(children: [
+            //   SizedBox(
+            //       height: MediaQuery.of(context).size.height * 0.65,
+            //       child: SingleChildScrollView(
+            //           padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+            //           scrollDirection: Axis.vertical,
+            //           child: Column(children: _createIngredientsFields())))
+            // ]),
+            Expanded(
+              flex: 1,
+              
+              child: 
+
+                  
+                Container(child:
+                
+                
+                  Container(
+                    
+                  child: _createIngredientsFields2()
+                 
+                 )
+                 
+            )
+            ),
+
             Row(children: [
               Column(children: [
                 Container(
@@ -101,6 +120,7 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
           } else {
             setState(() {
               ingredients.add(productName);
+              ingredientsCodes.add(scanResult);
             });
           }
         });
@@ -182,8 +202,47 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
                 ])))));
   }
 
+    ListView _createIngredientsFields2() {
+    return ListView.builder(
+      itemCount: ingredients.length,
+      itemBuilder: (context, index) {
+      // shrinkWrap: true,
+      return Card(child: 
+        ListTile(
+          title: TextFormField(
+            controller: _createEditController(index),
+            onChanged: (newValue) {ingredients[index] = _ingredientsEditControllers[index].text;},
+            keyboardType: TextInputType.multiline,
+            minLines: 1,
+            maxLines: 3,
+            // initialValue: ingredients[index],
+            readOnly: _editIngredients,
+            decoration: InputDecoration(
+border: InputBorder.none,
+
+          focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: _editIngredients ? Colors.white: Colors.black,
+              ),
+
+            )
+          ),
+          ),
+          subtitle: Text(ingredientsCodes[index]),
+          trailing: IconButton(
+            onPressed: () => _removeIngredient(ingredients[index]),
+            icon: const Icon(Icons.delete)
+            ),
+            
+        ),
+        
+      );
+      }
+    );
+  }
+
   TextEditingController _createEditController(int index) {
-    _ingredientsEditControllers.add(TextEditingController(text: ingredients[index]));
+    _ingredientsEditControllers[index].text = TextEditingController(text: ingredients[index]).text;
     return _ingredientsEditControllers[index];
   }
 
@@ -192,6 +251,7 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
     setState(() {
       ingredients.remove(ingredient);
       _ingredientsEditControllers.removeAt(index);
+      ingredientsCodes.removeAt(index);
     });
   }
 
