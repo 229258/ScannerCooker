@@ -133,7 +133,7 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
 
       Map<String, dynamic> responseParsed = jsonDecode(response.body);
       if (responseParsed["count"] == 0) {
-        throw Exception("No results for provided barcode");
+        throw Exception("Cannot recognize product with barcode $eanCode.");
       }
 
       final product = responseParsed["products"][0]["product_name"];
