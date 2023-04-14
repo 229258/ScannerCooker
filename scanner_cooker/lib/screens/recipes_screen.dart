@@ -43,7 +43,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                           getIngredientsTextField(),
                           const SizedBox(height: 40),
                           customButton(context, "Generate", () {
-                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.tryParse(recipesCountTextController.text));
+                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(", "), int.tryParse(recipesCountTextController.text));
                             recipes.catchError((e){
                               Fluttertoast.showToast(
                                   msg: "Error: ${e.toString()}",
@@ -97,7 +97,8 @@ class _RecipesScreenState extends State<RecipesScreen> {
         context,
         MaterialPageRoute(builder: (context) => const BarcodeScannerScreen()));
 
-    ingredientsTextController.text = "${ingredientsTextController.text} ${barcodeIngredients.join(" ")}";
+    String separator = ingredientsTextController.text.isNotEmpty ? ", " : " ";
+    ingredientsTextController.text = "${ingredientsTextController.text}$separator${barcodeIngredients.join(", ")}";
   }
 
   Column getRecipeItem(RecipeDetails details, int index) {
