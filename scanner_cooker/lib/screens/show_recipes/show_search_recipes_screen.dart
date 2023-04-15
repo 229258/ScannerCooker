@@ -31,7 +31,7 @@ class _ShowSearchRecipesScreenState extends State<ShowSearchRecipesScreen>
     return Scaffold(
       backgroundColor: stringToColorInHex(Constants.backgroundColorHex),
         appBar: AppBar(
-          title: const Text("Found recipies"),
+          title: const Text("Found recipes"),
           backgroundColor: stringToColorInHex(Constants.backgroundColorHex).withOpacity(.25),
         ),
         body:
