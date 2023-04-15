@@ -53,7 +53,7 @@ class _ShowRecipesScreenState extends State<ShowRecipesScreen> {
     return Scaffold(
         backgroundColor: stringToColorInHex(Constants.backgroundColorHex),
         appBar: AppBar(
-          title: const Text("Favorite recipies"),
+          title: const Text("Favorite recipes"),
           backgroundColor:
               stringToColorInHex(Constants.backgroundColorHex).withOpacity(.25),
           actions: [
