@@ -69,10 +69,10 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
                           child: customButton(
                               context,
                               ingredients.length != 1
-                                  ? "Add products"
-                                  : "Add product",
+                                  ? "Add products to list"
+                                  : "Add product to list",
                               () => Navigator.pop(context, ingredients),
-                              0.4))),
+                              0.5))),
                 )
               ])
             ])

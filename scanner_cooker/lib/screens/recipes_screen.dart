@@ -25,6 +25,25 @@ class _RecipesScreenState extends State<RecipesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: stringToColorInHex(Constants.backgroundColorHex),
+      appBar: AppBar(
+        title: const Text("Products list"),
+        backgroundColor:
+            stringToColorInHex(Constants.backgroundColorHex).withOpacity(.25),
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.only(right: 20),
+        //     child: GestureDetector(
+        //       onTap: () {
+        //         _setEditIngredients();
+        //       },
+        //       child: _editIngredients
+        //           ? const Icon(Icons.edit)
+        //           : const Icon(Icons.check_sharp),
+        //     ),
+        //   )
+        // ],
+      ),
         body: Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
@@ -37,7 +56,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                           SizedBox(
                             child: customButton(
                                 context,
-                                'SCAN BARCODES',
+                                'Scan barcodes',
                                 () => _addIngredientsFromBarcodes(context),
                                 0.6
                           )),
@@ -45,7 +64,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                           const SizedBox(height: 40),
                           getIngredientsTextField(),
                           const SizedBox(height: 40),
-                          customButton(context, "Generate", () {
+                          customButton(context, "Get recipes", () {
                             Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), 3);
                             recipes.catchError((e){
                               Fluttertoast.showToast(
@@ -186,10 +205,10 @@ class _RecipesScreenState extends State<RecipesScreen> {
     try
     {
       Database.addItemFromModel(recipe, products);
-      _showMessage("Recipe added");
+      _showMessage("Recipe added.");
     }on Exception catch (e)
     {
-        _showMessage("Data could not be saved");
+        _showMessage("Data could not be saved.");
     }
     return;
 
