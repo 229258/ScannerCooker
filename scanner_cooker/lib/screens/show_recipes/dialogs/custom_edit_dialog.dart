@@ -54,43 +54,45 @@ customDialog(Item? recipe, String text, BuildContext context, Function(String?, 
       context: context, builder: (context) {
     return Dialog(
       backgroundColor: stringToColorInHex("91e5f6"),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.close)),
-            ),
-            const Text('Recipe details', style: TextStyle(fontSize: 20)),
-            const SizedBox(height: 30),
-            const Text(
-                "Products"
-            ),
-            const SizedBox(height: 10),
-            editTextField(productsController, 1),
-            const SizedBox(height: 10),
-            const Text(
-                "Title"
-            ),
-            const SizedBox(height: 10),
-            editTextField(titleController, 1),
-            const SizedBox(height: 10),
-            const Text(
-                "Recipe"
-            ),
-            const SizedBox(height: 10),
-            editTextField(recipeController, 10),
-            const SizedBox(height: 10),
-            customButton(context, text, ()
-            {
-              //Database.editItem(recipe?.id, titleController.text.trim(), productsController.text.trim(), recipeController.text.trim());
-              logic(recipe?.id, titleController.text.trim(), productsController.text.trim(), recipeController.text.trim());
-              Navigator.pop(context);
-            })
-          ],
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.close)),
+              ),
+              const Text('Recipe details', style: TextStyle(fontSize: 20)),
+              const SizedBox(height: 30),
+              const Text(
+                  "Products"
+              ),
+              const SizedBox(height: 10),
+              editTextField(productsController, 1),
+              const SizedBox(height: 10),
+              const Text(
+                  "Title"
+              ),
+              const SizedBox(height: 10),
+              editTextField(titleController, 1),
+              const SizedBox(height: 10),
+              const Text(
+                  "Recipe"
+              ),
+              const SizedBox(height: 10),
+              editTextField(recipeController, 10),
+              const SizedBox(height: 10),
+              customButton(context, text, ()
+              {
+                //Database.editItem(recipe?.id, titleController.text.trim(), productsController.text.trim(), recipeController.text.trim());
+                logic(recipe?.id, titleController.text.trim(), productsController.text.trim(), recipeController.text.trim());
+                Navigator.pop(context);
+              })
+            ],
+          ),
         ),
-      ),
+      )
     );
   }
   );
