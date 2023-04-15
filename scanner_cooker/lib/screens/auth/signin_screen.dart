@@ -52,23 +52,64 @@ class _SignInScreenState extends State<SignInScreen> {
                 const SizedBox(
                   height: 40
                 ),
-                customButton(context, "LOG IN", () {
-                    String errorMessage;
-                    FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: emailTextController.text,
-                      password: passwordTextController.text)
-                      .then((value) {
-                        Navigator.push(context, new MaterialPageRoute(builder: (context) => const HomeScreen()));
-                  }).onError((error, StackTrace) {
-                        Fluttertoast.showToast(
-                          msg: "Error: ${error.toString()}",
+                customButton(context, "LOG IN", ()  async {
+                    String? errorMessage;
+                    if(emailTextController.text != "" && passwordTextController.text != "") {
+                      try {
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                            email: emailTextController.text,
+                            password: passwordTextController.text);
+                      } on FirebaseAuthException catch (error) {
+                        switch (error.code) {
+                          case "ERROR_EMAIL_ALREADY_IN_USE":
+                          case "account-exists-with-different-credential":
+                          case "email-already-in-use":
+                            errorMessage = "Email already used. Go to login page.";
+                            break;
+                          case "ERROR_WRONG_PASSWORD":
+                          case "wrong-password":
+                            errorMessage = "Wrong email/password combination.";
+                            break;
+                          case "ERROR_USER_NOT_FOUND":
+                          case "user-not-found":
+                            errorMessage = "No user found with this email.";
+                            break;
+                          case "ERROR_USER_DISABLED":
+                          case "user-disabled":
+                            errorMessage = "User disabled.";
+                            break;
+                          case "ERROR_TOO_MANY_REQUESTS":
+                            errorMessage = "Too many requests to log into this account.";
+                            break;
+                          case "ERROR_OPERATION_NOT_ALLOWED":
+                          case "operation-not-allowed":
+                            errorMessage = "Server error, please try again later.";
+                            break;
+                          case "ERROR_INVALID_EMAIL":
+                          case "invalid-email":
+                            errorMessage = "Email address is invalid.";
+                            break;
+                          default:
+                            break;
+                        }
+                      } catch( otherException) {
+                        errorMessage = otherException.toString();
+                      }
+                      if(errorMessage == null && mounted) {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+                        return;
+                      }
+                    } else {
+                      errorMessage = "You need to fulfill both e-mail and password text fields!";
+                    }
+                    Fluttertoast.showToast(
+                          msg: "Error: ${errorMessage.toString()}",
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.CENTER,
                           timeInSecForIosWeb: 1,
                           textColor: Colors.white,
                           fontSize: 16.0
-                        );
-                    });
+                    );
                 }),
                 signUpOption()
               ],
