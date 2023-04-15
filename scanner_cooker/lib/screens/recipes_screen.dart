@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:scanner_cooker/utils/constants.dart';
 import 'package:scanner_cooker/utils/custom_button.dart';
 import 'barcode/barcode_scanner_screen.dart';
 import '../spoonacular/get_recipe_from_ingredients.dart';
@@ -24,6 +25,25 @@ class _RecipesScreenState extends State<RecipesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: stringToColorInHex(Constants.backgroundColorHex),
+      appBar: AppBar(
+        title: const Text("Products list"),
+        backgroundColor:
+            stringToColorInHex(Constants.backgroundColorHex).withOpacity(.25),
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.only(right: 20),
+        //     child: GestureDetector(
+        //       onTap: () {
+        //         _setEditIngredients();
+        //       },
+        //       child: _editIngredients
+        //           ? const Icon(Icons.edit)
+        //           : const Icon(Icons.check_sharp),
+        //     ),
+        //   )
+        // ],
+      ),
         body: Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
@@ -36,16 +56,16 @@ class _RecipesScreenState extends State<RecipesScreen> {
                           SizedBox(
                             child: customButton(
                                 context,
-                                'SCAN BARCODES',
+                                'Scan barcodes',
                                 () => _addIngredientsFromBarcodes(context),
                                 0.6
                           )),
-                          getRecipesCountTextField(),
+                          // getRecipesCountTextField(),
                           const SizedBox(height: 40),
                           getIngredientsTextField(),
                           const SizedBox(height: 40),
-                          customButton(context, "Generate", () {
-                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.tryParse(recipesCountTextController.text));
+                          customButton(context, "Get recipes", () {
+                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), 3);
                             recipes.catchError((e){
                               Fluttertoast.showToast(
                                   msg: "Error: ${e.toString()}",
@@ -64,14 +84,13 @@ class _RecipesScreenState extends State<RecipesScreen> {
                             });
                           }),
                           const SizedBox(height: 40),
-                          Card(
-                              elevation: 0,
-                              color: recipeBackground,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25)
-                              ),
+                          Container(
+                              color: stringToColorInHex(Constants.backgroundColorHex),
+                              // shape: RoundedRectangleBorder(
+                              //     borderRadius: BorderRadius.circular(25)
+                              // ),
                               child: Padding(
-                                  padding: const EdgeInsets.all(32),
+                                  padding: const EdgeInsets.all(0),
                                   child: Column(
                                     children: <Widget>[
                                       ListView.builder(
@@ -103,26 +122,35 @@ class _RecipesScreenState extends State<RecipesScreen> {
     ingredientsTextController.text = "${ingredientsTextController.text} ${barcodeIngredients.join(" ")}";
   }
 
-  Column getRecipeItem(RecipeDetails details, int index) {
-    var firstEmptySpace = const SizedBox(height: 80);
+  Card getRecipeItem(RecipeDetails details, int index) {
+    // padding: EdgeInsets.fromLTRB(5, 5, 5, 5);
+    var firstEmptySpace = const SizedBox(height: 20);
     if (index == 0) {
       firstEmptySpace = const SizedBox(height: 0);
     }
-    return Column(children: <Widget>[
-      firstEmptySpace,
-      Align(
-        alignment: Alignment.topRight,
-        child: IconButton(icon: Icon(Icons.star_border), onPressed: () { addData(details); },)
-      ),
+    return Card(
+      elevation: 0,
+      // filled: true,
+      color: Colors.white.withOpacity(0.4),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+      margin: const EdgeInsets.all(5),
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Column(children: <Widget>[
+          firstEmptySpace,
+            Align(
+              alignment: Alignment.topRight,
+              child: IconButton(icon: const Icon(Icons.star_border), onPressed: () { addData(details); },)
+            ),
 
-      Text(details.title ?? "",
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Color.fromARGB(255, 75, 75, 75)),
-          textAlign: TextAlign.center),
-      const SizedBox(height: 40),
-      Text(details.instructions ?? "",
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color.fromARGB(255, 75, 75, 75)),
-          textAlign: TextAlign.center)
-    ]);
+          Text(details.title ?? "",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Color.fromARGB(255, 75, 75, 75)),
+              textAlign: TextAlign.center),
+          const SizedBox(height: 40),
+          Text(details.instructions ?? "",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color.fromARGB(255, 75, 75, 75)),
+              textAlign: TextAlign.center)
+    ])));
   }
 
   TextField getRecipesCountTextField() {
@@ -177,10 +205,10 @@ class _RecipesScreenState extends State<RecipesScreen> {
     try
     {
       Database.addItemFromModel(recipe, products);
-      _showMessage("Recipe added");
+      _showMessage("Recipe added.");
     }on Exception catch (e)
     {
-        _showMessage("Data could not be saved");
+        _showMessage("Data could not be saved.");
     }
     return;
 
