@@ -41,12 +41,12 @@ class _RecipesScreenState extends State<RecipesScreen> {
                                 () => _addIngredientsFromBarcodes(context),
                                 0.6
                           )),
-                          getRecipesCountTextField(),
+                          // getRecipesCountTextField(),
                           const SizedBox(height: 40),
                           getIngredientsTextField(),
                           const SizedBox(height: 40),
                           customButton(context, "Generate", () {
-                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), int.tryParse(recipesCountTextController.text));
+                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(" "), 3);
                             recipes.catchError((e){
                               Fluttertoast.showToast(
                                   msg: "Error: ${e.toString()}",
