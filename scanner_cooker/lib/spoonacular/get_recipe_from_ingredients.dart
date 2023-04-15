@@ -11,16 +11,21 @@ class GetRecipeByIngredients {
 
   final dio = Dio();
 
-  Future<List<RecipeDetails>> getRecipe(List<String> ingredients, int? number) async {
+  Future<List<RecipeDetails>> getRecipe(String ingredients, int? number) async {
+    if (ingredients.isEmpty) {
+      return Future.error('Empty list of ingredients');
+    }
+
+    List<String> ingredientsList = ingredients.split(', ');
+
     int numberOfrecipes = _getNumberOfRecipes(number);
     var url = '${Info.baseUrl}$ingredientsRecipePath&apiKey=$apiKey&number=$numberOfrecipes';
-    if (ingredients.isNotEmpty) {
-      url += '&ingredients=';
-      for (var element in ingredients) {
-        url += '$element,';
-      }
-      url = url.substring(0, url.length - 1);
+
+    url += '&ingredients=';
+    for (var element in ingredientsList) {
+      url += '$element,';
     }
+    url = url.substring(0, url.length - 1);
 
     final result = await dio.get(url);
 

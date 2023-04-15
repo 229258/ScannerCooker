@@ -65,7 +65,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                           getIngredientsTextField(),
                           const SizedBox(height: 40),
                           customButton(context, "Get recipes", () {
-                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text.split(", "), 3);
+                            Future<List<RecipeDetails>> recipes = GetRecipeByIngredients().getRecipe(ingredientsTextController.text, 3);
                             recipes.catchError((e){
                               Fluttertoast.showToast(
                                   msg: "Error: ${e.toString()}",
