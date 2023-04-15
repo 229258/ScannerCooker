@@ -26,9 +26,19 @@ class _HomeScreen extends State<HomeScreen> {
           ),
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height * 0.2, 20, 0),
+              padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height * 0, 20, 0),
               child: Column(
                 children: <Widget>[
+                  SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.65,
+                  height: MediaQuery.of(context).size.width * 0.65,
+                  child: Image.asset(
+                    "assets/images/scanner_cooker_200.png",
+                    fit: BoxFit.fill,
+                  )),
+                const SizedBox(
+                  height: 40
+                ),
                   customButton(context, "CREATE PRODUCTS LIST", () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const RecipesScreen()));
                   }),

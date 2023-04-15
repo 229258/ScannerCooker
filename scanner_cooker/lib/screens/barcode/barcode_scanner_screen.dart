@@ -32,8 +32,8 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
       backgroundColor: stringToColorInHex(Constants.backgroundColorHex),
       appBar: AppBar(
         title: _editIngredients
-            ? const Text("Scan product")
-            : const Text("Scan product (edit mode)"),
+            ? const Text("Scan products")
+            : const Text("Scan products (edit mode)"),
         backgroundColor:
             stringToColorInHex(Constants.backgroundColorHex).withOpacity(.25),
         actions: [
@@ -69,10 +69,10 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
                           child: customButton(
                               context,
                               ingredients.length != 1
-                                  ? "Add products"
-                                  : "Add product",
+                                  ? "Add products to list"
+                                  : "Add product to list",
                               () => Navigator.pop(context, ingredients),
-                              0.4))),
+                              0.5))),
                 )
               ])
             ])

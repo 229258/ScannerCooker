@@ -58,34 +58,51 @@ class _nameState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 40
                 ),
-                customButton(context, "SIGN UP", () {
-                  if(passwordTextController.text == renteredPasswordTextController.text) {
-                    FirebaseAuth.instance.createUserWithEmailAndPassword(
-                      email: emailTextController.text, 
-                      password: passwordTextController.text).then( (value) {
-                        print("Created new account!");
-                        addUser(value.user!.uid);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
-                      }).onError((error, stackTrace) {
-                        Fluttertoast.showToast(
-                          msg: "Error: ${error.toString()}",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          timeInSecForIosWeb: 1,
-                          textColor: Colors.white,
-                          fontSize: 16.0
-                        );
-                      });
+                customButton(context, "SIGN UP", () async {
+                  String? errorMessage;
+                  if((emailTextController.text != "" && passwordTextController.text != "" && renteredPasswordTextController.text != "") &&
+                      (renteredPasswordTextController.text == passwordTextController.text)) {
+                    UserCredential? userCredential;
+                    try {
+                      userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                          email: emailTextController.text,
+                          password: passwordTextController.text);
+                    } on FirebaseAuthException catch (error) {
+                      switch (error.code) {
+                        case "email-already-in-use":
+                          errorMessage = "Email already used. Go to login page.";
+                          break;
+                        case "invalid-email":
+                          errorMessage = "E-mail address is not valid!";
+                          break;
+                        case "operation-not-allowed":
+                          errorMessage = "Account isn't enabled!";
+                          break;
+                        case "weak-password":
+                          errorMessage = "Operation not allowed (weak password)";
+                          break;
+                        default:
+                          break;
+                      }
+                    } catch( otherException) {
+                      errorMessage = otherException.toString();
+                    }
+                    if(errorMessage == null && mounted) {
+                      addUser(userCredential!.user!.uid);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+                      return;
+                    }
                   } else {
-                      Fluttertoast.showToast(
-                      msg: "Password and rentered password are the same!",
+                    errorMessage = "You need to fullfil all fields (and they can't be empty). Password and rentered password must also be the same";
+                  }
+                  Fluttertoast.showToast(
+                      msg: "Error: ${errorMessage.toString()}",
                       toastLength: Toast.LENGTH_SHORT,
                       gravity: ToastGravity.CENTER,
                       timeInSecForIosWeb: 1,
                       textColor: Colors.white,
                       fontSize: 16.0
-                      );
-                  }
+                  );
                 })
               ]
             )
