@@ -32,8 +32,8 @@ class _BarcodeScannerScreen extends State<BarcodeScannerScreen> {
       backgroundColor: stringToColorInHex(Constants.backgroundColorHex),
       appBar: AppBar(
         title: _editIngredients
-            ? const Text("Scan product")
-            : const Text("Scan product (edit mode)"),
+            ? const Text("Scan products")
+            : const Text("Scan products (edit mode)"),
         backgroundColor:
             stringToColorInHex(Constants.backgroundColorHex).withOpacity(.25),
         actions: [
